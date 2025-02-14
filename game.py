@@ -126,23 +126,21 @@ def execute_action():
 
     save_game_data(game_data)
 
-    return jsonify({"message": f"{player} executed {action}.", "status": "success"}), 200
+    return jsonify({"message": f"{player} executed {action} successfully.", "status": "success"}), 200
 
+# ✅ Generate OpenAPI JSON Schema
 @app.route('/api_schema.json', methods=['GET'])
-def api_schema():
-    """Dynamically generate OpenAPI schema for Custom GPT"""
+def generate_api_schema():
+    """Dynamically generate OpenAPI JSON schema with the correct public URL"""
     schema = {
         "openapi": "3.1.0",
         "info": {
             "title": "Game of Thrones API",
-            "description": "API for managing the Game of Thrones board game.",
-            "version": "1.0.0"
+            "version": "1.0.0",
+            "description": "API for managing the Game of Thrones board game."
         },
         "servers": [
-            {
-                "url": "https://4klf6he0m0.eu.loclx.io",
-                "description": "Public API Server"
-            }
+            {"url": "https://got-cupd.onrender.com", "description": "Game of Thrones API on Render"}
         ],
         "paths": {
             "/check_server": {
@@ -150,6 +148,41 @@ def api_schema():
                     "operationId": "checkServer",
                     "summary": "Check if server is running",
                     "responses": {"200": {"description": "Server is running."}}
+                }
+            },
+            "/create_player": {
+                "post": {
+                    "operationId": "createPlayer",
+                    "summary": "Create a new player",
+                    "requestBody": {
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "house": "Stark",
+                                    "name": "JonSnow",
+                                    "type": "human"
+                                }
+                            }
+                        }
+                    },
+                    "responses": {"201": {"description": "Player created successfully"}}
+                }
+            },
+            "/execute_action": {
+                "post": {
+                    "operationId": "executeAction",
+                    "summary": "Execute an action",
+                    "requestBody": {
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "action": "attack",
+                                    "player": "JonSnow"
+                                }
+                            }
+                        }
+                    },
+                    "responses": {"200": {"description": "Action executed successfully"}}
                 }
             },
             "/game_state": {
@@ -166,50 +199,16 @@ def api_schema():
                     "responses": {"200": {"description": "Game reset successfully."}}
                 }
             },
-            "/create_player": {
-                "post": {
-                    "operationId": "createPlayer",
-                    "summary": "Create a new player",
-                    "requestBody": {
-                        "content": {
-                            "application/json": {
-                                "example": {"name": "JonSnow", "house": "Stark", "type": "human"}
-                            }
-                        }
-                    },
-                    "responses": {"201": {"description": "Player created successfully"}}
-                }
-            },
             "/start_game": {
                 "post": {
                     "operationId": "startGame",
                     "summary": "Start the game",
                     "responses": {"200": {"description": "Game has started."}}
                 }
-            },
-            "/execute_action": {
-                "post": {
-                    "operationId": "executeAction",
-                    "summary": "Execute an action",
-                    "requestBody": {
-                        "content": {
-                            "application/json": {
-                                "example": {"player": "JonSnow", "action": "attack"}
-                            }
-                        }
-                    },
-                    "responses": {"200": {"description": "Action executed successfully"}}
-                }
             }
         }
     }
     return jsonify(schema), 200
 
-if __name__ == "__main__":
-    print("🔄 Resetting game state...")
-    initialize_game_data()
-    print("✅ Game state has been reset.")
-
-    # ✅ Fix for Render: Use dynamic port
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)
