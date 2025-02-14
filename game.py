@@ -205,8 +205,11 @@ def api_schema():
     }
     return jsonify(schema), 200
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print("🔄 Resetting game state...")
     initialize_game_data()
     print("✅ Game state has been reset.")
-    app.run(host="0.0.0.0", port=5000)
+
+    # ✅ Fix for Render: Use dynamic port
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
