@@ -1,0 +1,11 @@
+{
+    "players": {},
+    "turn_order": [],
+    "game_status": "waiting",
+    "current_turn": null,
+    "ai_players": [],
+    "votes_to_start": {},
+    "game_events": [],
+    "last_attacks": {},
+    "ai_difficulty": "normal"
+}
